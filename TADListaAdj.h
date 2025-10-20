@@ -45,16 +45,39 @@ void inserirListaPeso(ListaAdjacencia**lista, char origem, char vertice, int pes
 	else
 	{
 		//procurar o vertice origem
-		aux = ant = *lista;
+		aux = *lista;
 		while(aux != NULL && origem != aux->vertice)
-		{
-			ant = aux;
 			aux = aux->head;
-		}
+		
 		//se nao existe eu crio o vertice origem
 		if(aux == NULL)
 		{ //entao nao existe esse vertice origem
-			ant->head = novaCaixaLista(origem, peso);
+			nova = novaCaixaLista(origem, peso);
+		
+			if ((*lista)->vertice > origem)
+			{
+				nova->head = *lista;
+				*lista = nova;
+			}
+			else
+			{
+				aux = *lista;
+				ant = aux;
+				while (aux != NULL && aux->vertice < origem)
+				{
+					ant = aux;
+					aux = aux->head;
+				}
+				if (aux != NULL) // meio
+				{
+					nova->head = ant->head;
+					ant->head = nova;
+				}
+				else
+				{
+					ant->head = nova;
+				}
+			} 
 		}
 		else
 		{		
