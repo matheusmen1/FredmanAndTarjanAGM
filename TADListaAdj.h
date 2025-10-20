@@ -36,36 +36,67 @@ void inserirLista(ListaAdjacencia**lista, char vertice, int peso){
 
 void inserirListaPeso(ListaAdjacencia**lista, char origem, char vertice, int peso)
 {
-	ListaAdjacencia * nova, *aux, *ant;
+	ListaAdjacencia *nova, *aux, *ant, *Lista;
 
 	//se lista vazia
 	if(*lista == NULL){
 		inserirLista(&(*lista),origem, peso);
 	}
-	else{
+	else
+	{
 		//procurar o vertice origem
 		aux = ant = *lista;
-		while(aux != NULL && origem != aux->vertice){
+		while(aux != NULL && origem != aux->vertice)
+		{
 			ant = aux;
 			aux = aux->head;
 		}
 		//se nao existe eu crio o vertice origem
-		if(aux == NULL){ //entao nao existe esse vertice origem
+		if(aux == NULL)
+		{ //entao nao existe esse vertice origem
 			ant->head = novaCaixaLista(origem, peso);
 		}
-		else{
+		else
+		{		
 			//fazer a busca na horizontal, buscar o vertice de destino
-			ant = aux;
+			Lista = aux;
 			aux = aux->tail;
-			while(aux != NULL && vertice != aux->vertice){
-				ant = aux;
+			while(aux != NULL && vertice != aux->vertice)
 				aux = aux->tail;
-			}
+			
 			//nao existe o vertice para o destino
-			if(aux == NULL){
+			if(aux == NULL)
+			{
 				nova = novaCaixaLista(vertice, peso);
-				nova->peso = peso;
-				ant->tail = nova;
+				if (Lista->tail == NULL)
+				{
+					Lista->tail = nova;
+				}
+				else
+				if (Lista->tail->vertice > vertice)
+				{
+					nova->tail = Lista->tail;
+					Lista->tail = nova;
+				}
+				else
+				{
+					aux = Lista->tail;
+					ant = aux;
+					while (aux != NULL && aux->vertice < vertice)
+					{
+						ant = aux;
+						aux = aux->tail;
+					}
+					if (aux != NULL) // meio
+					{
+						nova->tail = ant->tail;
+						ant->tail = nova;
+					}
+					else // fim
+					{
+						ant->tail = nova;
+					}
+				}
 			}
 		}
 	}
@@ -96,8 +127,3 @@ void exibirListaAdjacencia(ListaAdjacencia * lista)
 		auxVert = auxVert->head;
 	}
 }
-
-
-
-
-
