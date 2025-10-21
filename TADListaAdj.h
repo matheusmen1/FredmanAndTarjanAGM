@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <conio2.h>
 
 struct listaAdjacencia
 {

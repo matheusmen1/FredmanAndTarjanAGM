@@ -243,12 +243,27 @@ void liberarMemFibHeap(FibNo * atual)
 		} while(atual != inicio); //andar na horizontal pelos primos
 	}
 }
-
+void inicializarVetorInt(int vet[], int tam)
+{
+	for (int i = 0; i < tam; i++)
+	{
+		vet[i] = 0;
+	}
+}
+void inicializarVetorChar(char vet[], int tam)
+{
+	for (int i = 0; i < tam; i++)
+	{
+		vet[i] = 0;
+	}
+}
 void arvoreGeradoraMinima(ListaAdjacencia * grafo, ListaAdjacencia ** arvoreMinima, char origem[], char destino[], int peso[], int debug)
 {
 	ListaAdjacencia * verticeAtual = grafo; //recebe um vertice arbitrario, no nosso caso recebe o primeiro do grafo
 	int cont = 1, quantNos = contaNos(grafo);
-	int visitados[quantNos] = {}; //vetor de vertices visitados inicializado com 0 (nao visitado)
+	//int visitados[quantNos] = {}; //vetor de vertices visitados inicializado com 0 (nao visitado)
+	int visitados[quantNos];
+	inicializarVetorInt(visitados, quantNos);
 	FibNo * menor;
 	FibHeap * fibHeap;
 	
@@ -258,7 +273,7 @@ void arvoreGeradoraMinima(ListaAdjacencia * grafo, ListaAdjacencia ** arvoreMini
 	if(debug == 1)
 	{
 		textcolor(LIGHTBLUE);
-		printf("\nArvore Minima e FibHeap inicializados!\n");
+		printf("\nArvore Minima e FibHeap Inicializados!\n");
 		textcolor(WHITE);
 		getch();
 	}
@@ -271,7 +286,7 @@ void arvoreGeradoraMinima(ListaAdjacencia * grafo, ListaAdjacencia ** arvoreMini
 			adicionarAdjacentes(verticeAtual, visitados, &fibHeap); //adiciono ao meu fibHeap os vertices adjacentes ao meu atual -> FEITO!
 			if(debug == 1){
 				textcolor(LIGHTBLUE);
-				printf("\nAdicionei elementos no FibHeap:");
+				printf("\nAdicionei Elementos no FibHeap:");
 				textcolor(WHITE);
 				exibirHeap(getMin(&fibHeap));
 				getch();
@@ -283,7 +298,7 @@ void arvoreGeradoraMinima(ListaAdjacencia * grafo, ListaAdjacencia ** arvoreMini
 			menor = extractMin(fibHeap);
 			if(debug == 1){
 				textcolor(LIGHTBLUE);
-				printf("\nMinimo extraido!\n");
+				printf("\nMinimo Extraido!\n");
 				printf("Origem: %c -> Destino: %c | Peso: %d\n", menor->origem, menor->destino, menor->key);
 				textcolor(WHITE);
 				getch();
@@ -296,7 +311,7 @@ void arvoreGeradoraMinima(ListaAdjacencia * grafo, ListaAdjacencia ** arvoreMini
 					textcolor(LIGHTBLUE);
 					printf("\nMinimo Valido!\n");
 					printf("Origem: %c -> Destino: %c | Peso: %d\n", menor->origem, menor->destino, menor->key);
-					printf("\nDepois de retirado (valido -> adicionar na arvore):");
+					printf("\nDepois de Retirado (valido -> Adicionar na Arvore):");
 					textcolor(WHITE);
 					exibirHeap(getMin(&fibHeap));
 					getch();
@@ -313,7 +328,7 @@ void arvoreGeradoraMinima(ListaAdjacencia * grafo, ListaAdjacencia ** arvoreMini
 				
 				if(debug == 1){
 					textcolor(LIGHTBLUE);
-					printf("\nMenor inserido na Arvore Minima!\n");
+					printf("\nMenor Inserido na Arvore Minima!\n");
 					textcolor(WHITE);
 					exibirListaAdjacencia(*arvoreMinima);
 					getch();
@@ -385,7 +400,7 @@ void executar(void)
 		
 		//exibicao de moldura
 		clrscr();
-		//Moldura(1,1, 120,30, 7, 7);
+		Moldura(1,1, 120,30, 7, 7);
 		gotoxy(45,4), printf("     ====================================");
 		gotoxy(65,5), textcolor(3),printf ("Fredman");
 		gotoxy(67,6), textcolor(3),printf ("And");
@@ -405,7 +420,6 @@ void executar(void)
 				clrscr();
 				exibirListaAdjacencia(Lista); //esse seria o meu grafo
 				getch();
-				//prim_fibheap(m, qtdeVertices);
 				break;
 			}
 			case 'B': //insert e meld -> fib heap
@@ -463,22 +477,30 @@ void executar(void)
 				
 				//funcao para gerar a arvore minima
 				clrscr();
-				char origem[qtdeVertices] = {};
-				char destino[qtdeVertices] = {};
-				int peso[qtdeVertices] = {};
+				//char origem[qtdeVertices] = {};
+				//char destino[qtdeVertices] = {};
+				//int peso[qtdeVertices] = {};
+				char origem[qtdeVertices];
+				char destino[qtdeVertices];
+				int peso[qtdeVertices];
+				inicializarVetorInt(peso, qtdeVertices);
+				inicializarVetorChar(origem, qtdeVertices);
+				inicializarVetorChar(destino, qtdeVertices);
 				arvoreGeradoraMinima(Lista, &arvoreMin, origem, destino, peso, 1);
 				
 				//exibir a arvore gerada
 				clrscr();
-				printf("\nLista de adjacencia da arvore geradora minima (MST):");
+				textcolor(3),printf("\nLista de Adjacencia da Arvore Geradora Minima (MST):\n");
+				textcolor(WHITE);
 				exibirListaAdjacencia(arvoreMin);
-				printf("\nArvore geradora minima (MST) com niveis:\n");
+				textcolor(3),printf("\nArvore Geradora Minima (MST) Com Niveis:\n");
+				textcolor(WHITE);
 				exibirArvoreGeradoraMinima(origem[0], origem, destino, peso, qtdeVertices);
 				
 				//exibir o valor da arvore gerada
 				int valor = valorArvoreMinima(arvoreMin);
-				printf("Valor da arvore gerada: %d\n", valor);
-				
+				textcolor(3),printf("\nValor da Arvore Gerada: %d\n", valor);
+				textcolor(WHITE);
 				getch();
 				
 				break;
@@ -490,22 +512,30 @@ void executar(void)
 				
 				//funcao para gerar a arvore minima
 				clrscr();
-				char origem[qtdeVertices] = {};
-				char destino[qtdeVertices] = {};
-				int peso[qtdeVertices] = {};
+				//char origem[qtdeVertices] = {};
+				//char destino[qtdeVertices] = {};
+				//int peso[qtdeVertices] = {};
+				char origem[qtdeVertices];
+				char destino[qtdeVertices];
+				int peso[qtdeVertices];
+				inicializarVetorInt(peso, qtdeVertices);
+				inicializarVetorChar(origem, qtdeVertices);
+				inicializarVetorChar(destino, qtdeVertices);
 				arvoreGeradoraMinima(Lista, &arvoreMin, origem, destino, peso, 0);
 				
 				//exibir a arvore gerada
 				clrscr();
-				printf("\nLista de adjacencia da arvore geradora minima (MST):");
+				textcolor(3),printf("\nLista de Adjacencia da Arvore Geradora Minima (MST):\n");
+				textcolor(WHITE);
 				exibirListaAdjacencia(arvoreMin);
-				printf("\nArvore geradora minima (MST) com niveis:\n");
+				textcolor(3),printf("\nArvore Geradora Minima (MST) Com Niveis:\n");
+				textcolor(WHITE);
 				exibirArvoreGeradoraMinima(origem[0], origem, destino, peso, qtdeVertices);
 				
 				//exibir o valor da arvore gerada
 				int valor = valorArvoreMinima(arvoreMin);
-				printf("\nValor da arvore gerada: %d\n", valor);
-				
+				textcolor(3),printf("\nValor da Arvore Gerada: %d\n", valor);
+				textcolor(WHITE);
 				getch();
 				
 				break;
