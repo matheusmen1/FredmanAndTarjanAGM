@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
 #define TF 50
+
+//structs
 struct fibno
 {
 	int key; // custo da aresta
+	char origem; //vertice que sai a aresta -> Gabriel
+	char destino; //vertice que chega a aresta -> Gabriel
 	struct fibno *esq, *dir; // fila circular
 	struct fibno *pai;
 	struct fibno *filho;
@@ -21,17 +26,37 @@ struct fibheap
 };
 typedef struct fibheap FibHeap;
 
+//funcoes
 void inicializar(FibHeap **heap)
 {
 	*heap = (FibHeap*)malloc(sizeof(FibHeap));
 	(*heap)->n = 0;
 	(*heap)->min = NULL;
 }
+
 FibNo *NovoFibNo(int peso)
 {
 	FibNo *NC;
 	NC = (FibNo*)malloc(sizeof(FibNo));
 	NC->key = peso;
+	NC->esq = NC;
+	NC->dir = NC;
+	NC->pai = NULL;
+	NC->filho = NULL;
+	NC->degree = 0;
+	NC->mark = 0;
+	
+	return NC;
+}
+
+//adicional -> Gabriel
+FibNo *NovoFibNoChar(int peso, char origem, char destino)
+{
+	FibNo *NC;
+	NC = (FibNo*)malloc(sizeof(FibNo));
+	NC->key = peso;
+	NC->origem = origem; //onde sai a aresta
+	NC->destino = destino; //onde chega a aresta
 	NC->esq = NC;
 	NC->dir = NC;
 	NC->pai = NULL;
@@ -64,6 +89,31 @@ void inserir(FibHeap **heap, int peso)
 	(*heap)->n = (*heap)->n + 1;
 	
 }
+
+//adicional -> Gabriel
+void inserirPesoChar(FibHeap **heap, int peso, char origem, char destino)
+{
+	FibNo *NC;
+	NC = NovoFibNoChar(peso, origem, destino);
+	if((*heap)->min == NULL)
+	{
+		(*heap)->min = NC;
+	}
+	else
+	{
+		// min->esq <-> NC <-> min
+		
+		(*heap)->min->esq->dir = NC;
+		NC->dir = (*heap)->min;
+		NC->esq = (*heap)->min->esq;
+		(*heap)->min->esq = NC;
+		if ((*heap)->min->key > peso)
+			(*heap)->min = NC;
+	}
+	(*heap)->n = (*heap)->n + 1;
+	
+}
+
 FibNo *getMin(FibHeap **heap)
 {
 	return (*heap)->min;
@@ -87,6 +137,7 @@ FibHeap *meld(FibHeap *h1, FibHeap *h2)
 	return h1;
 
 }
+
 void fibHeapLink(FibHeap *heap, FibNo *y, FibNo *x) // insere y da raiz, na lista de filhos de x
 {
 	y->dir->esq = y->esq;
@@ -109,6 +160,7 @@ void fibHeapLink(FibHeap *heap, FibNo *y, FibNo *x) // insere y da raiz, na list
 	x->degree++;
 	y->mark = 0;
 }
+
 int calcDegree(int n)
 {
 	int count = 0;
@@ -119,6 +171,7 @@ int calcDegree(int n)
 	}
 	return count;
 }
+
 void consolidate(FibHeap *heap)
 {
 	// garantir que exista apenas um no com aquela quantidade de degree
@@ -197,6 +250,7 @@ void consolidate(FibHeap *heap)
 	}
 
 }
+
 FibNo *extractMin(FibHeap *heap)
 {
 	FibNo *min, *filho, *atual;
@@ -244,6 +298,7 @@ FibNo *extractMin(FibHeap *heap)
 	
 	return min;
 }
+
 void cut (FibHeap *heap, FibNo *no, FibNo *pai)
 {
 	no->esq->dir = no->dir;
@@ -271,6 +326,7 @@ void cut (FibHeap *heap, FibNo *no, FibNo *pai)
 	no->mark = 0;
 	
 }
+
 void cascadingCut(FibHeap *heap, FibNo *pai) // garante que a arvore fique equilibrada
 {
 	FibNo *avo;
@@ -291,6 +347,7 @@ void cascadingCut(FibHeap *heap, FibNo *pai) // garante que a arvore fique equil
 	}
 	
 }
+
 void decreaseKey(FibHeap *heap, FibNo *no, int novoPeso)
 {
 	if (novoPeso < no->key)
@@ -343,8 +400,8 @@ void exibirNo(FibNo *no, char *indent)
 {
     if (no != NULL) 
 	{
-	    printf("%s|- No (%d) [Degree: %d, Marca: %d]\n", 
-	           indent, no->key, no->degree, no->mark);
+	    printf("%s|- Aresta (%c -> %c) | Peso/Key: %d [Degree: %d] \n", 
+	           indent, no->origem, no->destino, no->key, no->degree);
 	    char novaIndent[256]; 
 	    snprintf(novaIndent, 256, "%s|   ", indent);
 	    if (no->filho != NULL)

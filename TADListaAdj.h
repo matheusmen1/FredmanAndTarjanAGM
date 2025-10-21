@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <conio2.h>
+
 struct listaAdjacencia
 {
     char vertice;
@@ -41,6 +43,8 @@ void inserirListaPeso(ListaAdjacencia**lista, char origem, char vertice, int pes
 	//se lista vazia
 	if(*lista == NULL){
 		inserirLista(&(*lista),origem, peso);
+		if(vertice != '\0')
+			inserirListaPeso(lista, origem, vertice, peso);
 	}
 	else
 	{
@@ -77,7 +81,9 @@ void inserirListaPeso(ListaAdjacencia**lista, char origem, char vertice, int pes
 				{
 					ant->head = nova;
 				}
-			} 
+			}
+			if(vertice != '\0')
+				inserirListaPeso(lista, origem, vertice, peso);
 		}
 		else
 		{		
